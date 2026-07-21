@@ -10,8 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 0) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_20_062537) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "tenants", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "subdomain", null: false
+    t.string "company_email"
+    t.integer "status", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_email"], name: "index_tenants_on_company_email", unique: true
+    t.index ["subdomain"], name: "index_tenants_on_subdomain", unique: true
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.bigint "tenant_id", null: false
+    t.string "full_name", null: false
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.integer "role", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "email"], name: "index_users_on_tenant_id_and_email", unique: true
+    t.index ["tenant_id"], name: "index_users_on_tenant_id"
+  end
+
+  add_foreign_key "users", "tenants"
 end
